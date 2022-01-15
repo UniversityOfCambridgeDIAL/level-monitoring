@@ -24,7 +24,7 @@ dist=[]
 distlist=[]
 scan=False
 
-def status():
+def measureAverage():
     history=[]
 
     starttime=time.time()
@@ -38,10 +38,12 @@ def status():
         # GPIO Setup
         # ==========
         GPIO.output(TRIG, True)
-        time.sleep(0.00001)
+        time.sleep(0.0001)
         GPIO.output(TRIG, False)
 
         #print("Sending...")
+        pulse_start=0
+        pulse_end=0
         start=time.time()
         pulse_start=start
         while GPIO.input(ECHO)==0 and pulse_start-start<=0.0005:
@@ -50,7 +52,6 @@ def status():
             print(timeout)
         else:
             #print("Receiving...")
-            pulse_end=0
             pulse_duration=0
             while GPIO.input(ECHO)==1 and pulse_duration<2:
                 pulse_end=time.time()
@@ -64,24 +65,28 @@ def status():
         # ====================
         distance=pulse_duration*17150
         distance=round(distance,2)
-        history.append(distance)
+        if distance < 0:
+            history.append(history[-1])
+        else:
+            history.append(distance)
     validcount=0
     total=0
-    print(history)
+#     print(history)
     for i in history:
         if i<150:
             validcount+=1
             total+=i
     if validcount>1:
         avg_dist=round(total/validcount,2)
-        print("Average distance:",avg_dist, "cm")
-        if avg_dist<=50:
-            return([avg_dist,True,avg_dist,avg_dist])
-        else:
-            return([avg_dist,False,avg_dist,avg_dist])
-    else:
-        print("Timeout")
-        return([999,False,999,999]) 
+#         print("Average distance:",avg_dist, "cm")
+        return avg_dist
+#         if avg_dist<=50:
+#             return([avg_dist,True,avg_dist,avg_dist])
+#         else:
+#             return([avg_dist,False,avg_dist,avg_dist])
+#     else:
+#         print("Timeout")
+#         return([999,False,999,999]) 
  
 def measure():
  time.sleep(0.5)
@@ -101,14 +106,15 @@ def measure():
  
  distance = round(distance, 2)
  
- print ("Distance:",distance,"cm")
+#  print ("Distance:",distance,"cm")
+ return distance
  
  
 loop = 1
 while loop == 1:
-#  measure() #without filter
- status() #with filter
- 
+ x=measure() 
+ y=measureAverage()
+ print("measure:",x,"average:",y)
  
 GPIO.cleanup()
  
