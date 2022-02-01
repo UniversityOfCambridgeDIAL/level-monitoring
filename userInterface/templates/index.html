@@ -1,0 +1,66 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block styles %}
+{{ super() }}
+	<style>
+		body { background: #e8f1f9; }
+	</style>
+{% endblock %}
+
+{% block title %}
+Main
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+      <h1 class="pt-5 pb-2">Welcome to the Stock Level Monitoring!</h1>
+
+      <p class="lead">This is the index page for an example Flask app using a SQL database.</p>
+
+      <p>Select the record you would like to see:</p>
+      <ul>
+          <li><a href="{{ url_for( 'inventory') }}">Inventory list</a></li>
+      </ul>
+	  <!-- links -->
+	  <p style="margin-top:20px">You can <a href="{{ url_for('add_record') }}">submit a new record</a>.</p>
+	  <p style="margin-top:20px">You can <a href="{{ url_for( 'select_record', letters='AF' ) }}">select a record for editing</a>.</p>
+
+    </div>
+  </div>
+</div>
+<br>
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+      <table>
+	<tr>
+	  <th style="width:130px">Sensor</th>
+	  <th style="width:130px">Current level</th>
+	</tr>
+	<tr>
+	  <td>Sensor 1</td>
+	  <td style="text-align:center">0</td>
+	</tr>
+	<tr>
+	  <td>Sensor 2</td>
+	  <td style="text-align:center">0</td>
+	</tr>
+	<tr>
+	  <td>Sensor 3</td>
+	  <td style="text-align:center">0</td>
+	</tr>
+	<tr>
+	  <td>Sensor 4</td>
+	  <td style="text-align:center">0</td>
+	</tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
