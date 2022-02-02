@@ -26,12 +26,15 @@ class Emailer:
         #Send Email & Exit
         session.sendmail(GMAIL_USERNAME, recipient, headers + "\r\n\r\n" + content)
         session.quit
- 
-sender = Emailer()
- 
-sendTo = ['jyl49@cam.ac.uk']
-emailSubject = "Hello World"
-emailContent = "This is a test of my Emailer Class"
- 
-#Sends an email to the "sendTo" address with the specified "emailSubject" as the subject and "emailContent" as the email content.
-sender.sendmail(sendTo, emailSubject, emailContent)  
+        
+
+if __name__ == '__main__':
+
+    sender = Emailer()
+     
+    sendTo = ['jyl49@cam.ac.uk']
+    emailSubject = "Hello World"
+    emailContent = "This is a test of my Emailer Class"
+     
+    #Sends an email to the "sendTo" address with the specified "emailSubject" as the subject and "emailContent" as the email content.
+    sender.sendmail(sendTo, emailSubject, emailContent)  

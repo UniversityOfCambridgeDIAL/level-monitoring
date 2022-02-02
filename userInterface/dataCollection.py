@@ -4,15 +4,15 @@ import time
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
  
-TRIG = 7
-ECHO = 11
- 
-print ("Distance Measurement In Progress")
- 
-GPIO.setup(TRIG,GPIO.OUT)
-GPIO.setup(ECHO,GPIO.IN)
- 
-GPIO.output(TRIG, False)
+# TRIG = 7
+# ECHO = 11
+#  
+# print ("Distance Measurement In Progress")
+#  
+# GPIO.setup(TRIG,GPIO.OUT)
+# GPIO.setup(ECHO,GPIO.IN)
+#  
+# GPIO.output(TRIG, False)
 # print ("Waiting For Sensor To Settle")
 history=[]
 
@@ -24,7 +24,11 @@ dist=[]
 distlist=[]
 scan=False
 
-def measureAverage():
+def measureAverage(TRIG,ECHO):  
+    GPIO.setup(TRIG,GPIO.OUT)
+    GPIO.setup(ECHO,GPIO.IN)
+     
+    GPIO.output(TRIG, False)
     history=[]
 
     starttime=time.time()
@@ -88,7 +92,11 @@ def measureAverage():
 #         print("Timeout")
 #         return([999,False,999,999]) 
  
-def measure():
+def measure(TRIG,ECHO):
+    GPIO.setup(TRIG,GPIO.OUT)
+    GPIO.setup(ECHO,GPIO.IN)
+     
+    GPIO.output(TRIG, False)
     time.sleep(0.5)
     GPIO.output(TRIG, True)
     time.sleep(0.1)

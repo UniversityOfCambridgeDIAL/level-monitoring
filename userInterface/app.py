@@ -10,6 +10,7 @@ from wtforms.validators import InputRequired, Length, Regexp, NumberRange
 from wtforms.fields import DateTimeLocalField
 from datetime import date, datetime
 
+import analysis
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
@@ -97,7 +98,11 @@ def stringdate():
 # ‘/’ URL is bound with hello_world() function.
 def index():
     # get a list of unique values in the style column
-    return render_template('index.html')
+    sensor1 = analysis.analyseMeasure(7,11) #pin 7 and 11
+    sensor2 = analysis.analyseMeasure(7,11) #pin 7 and 11
+    sensor3 = analysis.analyseMeasure(7,11) #pin 7 and 11
+    sensor4 = analysis.analyseMeasure(7,11) #pin 7 and 11
+    return render_template('index.html', sensor1=sensor1,sensor2=sensor2,sensor3=sensor3,sensor4=sensor4)
 
 @app.route('/inventory')
 def inventory():
