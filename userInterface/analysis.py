@@ -27,7 +27,9 @@ def schedule_db_timing():
 def analyseMeasureAverage(TRIG,ECHO):
     read = 0
     read = dataCollection.measureAverage(TRIG,ECHO)
-    if read > 80:
+    if read > 900:
+        avg_dist = 'Check connection'
+    elif read > 80:
         avg_dist = 0
     elif read > 60:
         avg_dist = 0.25
@@ -40,7 +42,9 @@ def analyseMeasureAverage(TRIG,ECHO):
 def analyseMeasure(TRIG,ECHO):
     read = 0
     read = dataCollection.measure(TRIG,ECHO)
-    if read > 80:
+    if read > 900:
+        distance = 'Check connection'
+    elif read > 80:
         distance = 0
     elif read > 60:
         distance = 0.25

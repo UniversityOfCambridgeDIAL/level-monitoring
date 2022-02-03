@@ -61,6 +61,8 @@ def measureAverage(TRIG,ECHO):
                 pulse_end=time.time()
                 pulse_duration=pulse_end-pulse_start
                 #print("Measuring...")
+            if pulse_duration > 2:
+                return 999
 
         pulse_duration=pulse_end-pulse_start
 
@@ -93,6 +95,9 @@ def measureAverage(TRIG,ECHO):
 #         return([999,False,999,999]) 
  
 def measure(TRIG,ECHO):
+    pulse_duration = 0
+    pulse_start = 0
+    pulse_end = 0
     GPIO.setup(TRIG,GPIO.OUT)
     GPIO.setup(ECHO,GPIO.IN)
      
@@ -104,10 +109,11 @@ def measure(TRIG,ECHO):
 
     while GPIO.input(ECHO)==0:
         pulse_start = time.time()
-
-    while GPIO.input(ECHO)==1:
+    while GPIO.input(ECHO)==1 and pulse_duration < 2:
         pulse_end = time.time()
-
+        pulse_duration=pulse_end-pulse_start
+    if pulse_duration > 2:
+        return 999
     pulse_duration = pulse_end - pulse_start
 
     distance = pulse_duration * 17150
@@ -120,8 +126,8 @@ def measure(TRIG,ECHO):
 if __name__ == "__main__":
     loop = 1
     while loop == 1:
-        x=measure() 
-        y=measureAverage()
+        x=measure(7,11) 
+        y=measureAverage(23,24)
         print("measure:",x,", average:",y)
  
 # GPIO.cleanup()

@@ -11,6 +11,14 @@ from wtforms.fields import DateTimeLocalField
 from datetime import date, datetime
 
 import analysis
+TRIG1=7
+ECHO1=11
+TRIG2=15
+ECHO2=16
+TRIG3=23
+ECHO3=24
+TRIG4=35
+ECHO4=36
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
@@ -98,10 +106,10 @@ def stringdate():
 # ‘/’ URL is bound with hello_world() function.
 def index():
     # get a list of unique values in the style column
-    sensor1 = analysis.analyseMeasure(7,11) #pin 7 and 11
-    sensor2 = analysis.analyseMeasure(7,11) #pin 7 and 11
-    sensor3 = analysis.analyseMeasure(7,11) #pin 7 and 11
-    sensor4 = analysis.analyseMeasure(7,11) #pin 7 and 11
+    sensor1 = analysis.analyseMeasure(TRIG1,ECHO1) 
+    sensor2 = analysis.analyseMeasure(TRIG2,ECHO2) 
+    sensor3 = analysis.analyseMeasure(TRIG3,ECHO3) 
+    sensor4 = analysis.analyseMeasure(TRIG4,ECHO4) 
     return render_template('index.html', sensor1=sensor1,sensor2=sensor2,sensor3=sensor3,sensor4=sensor4)
 
 @app.route('/inventory')
