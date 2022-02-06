@@ -7,6 +7,14 @@ import datetime
 import sqlite3
 
 USER_EMAIL = ['jyl49@cam.ac.uk'] # ['abc@xyz.com','efg@xyz.com']
+TRIG1=7
+ECHO1=11
+TRIG2=15
+ECHO2=16
+TRIG3=23
+ECHO3=24
+TRIG4=35
+ECHO4=36
     
 def time_in_range(current):
     """Returns whether current is in the range [start, end]"""
@@ -72,28 +80,28 @@ def schedule_db():
 #     print('test')
     x = datetime.datetime.today()
     time_in = time_in_range (datetime.datetime.now().time())
-    read1 = analyseMeasureAverage(7,11)
-    read2 = analyseMeasureAverage(7,11)
-    read3 = analyseMeasureAverage(7,11)
-    read4 = analyseMeasureAverage(7,11)
+    read1 = analyseMeasureAverage(TRIG1,ECHO1)
+    read2 = analyseMeasureAverage(TRIG2,ECHO2)
+    read3 = analyseMeasureAverage(TRIG3,ECHO3)
+    read4 = analyseMeasureAverage(TRIG4,ECHO4)
     readings = [read1,read2,read3,read4]
+    sensorlist = []
+    triggerlist = []
 #     print(readings)
-    for i in range(len(readings)):
-        if readings[i] == 0 and x.isoweekday() < 6 and time_in == True:
-            sender = sendemail.Emailer()
-            sendTo = USER_EMAIL
-            emailSubject = "Liquid level is running low at Sensor "+str(i+1)
-            emailContent = "Please ignore if not relevant to you. "
-            sender.sendmail(sendTo, emailSubject, emailContent)
-    result = dataStorage()
-#     print(result)
-    for i in range(len(result)) and x.isoweekday() < 6 and time_in == True:
-        if result[i][1] == result[i][2]:
-            sender = sendemail.Emailer()
-            sendTo = USER_EMAIL
-            emailSubject = "Remaining stock trigger for "+ result[i][0]
-            emailContent = "Please ignore if not relevant to you. "
-            sender.sendmail(sendTo, emailSubject, emailContent)        
+    if time_in == True: # x.isoweekday() < 6 and 
+        for i in range(len(readings)):
+            if readings[i] == 0:
+                sensorlist.append('Sensor ' + str(i+1))
+        result = dataStorage()
+#         print(result)
+        for i in range(len(result)):
+            if result[i][1] == result[i][2]:
+                triggerlist.append(result[i][0])
+        sender = sendemail.Emailer()
+        sendTo = USER_EMAIL
+        emailSubject = "Stock level monitoring status"
+        emailContent = "Please ignore if not relevant to you. <br>" + "Liquid level is running low: " + str(sensorlist) +"<br>" + "Remaining stock trigger: "+ str(triggerlist)
+        sender.sendmail(sendTo, emailSubject, emailContent)
     secs2 = schedule_db_timing()
 #     print('secs2',secs2)
     Timer(secs2,schedule_db).start()#86400seconds=24hours
