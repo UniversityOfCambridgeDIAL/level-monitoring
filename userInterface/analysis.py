@@ -88,7 +88,7 @@ def schedule_db():
     sensorlist = []
     triggerlist = []
 #     print(readings)
-    if time_in == True: # x.isoweekday() < 6 and 
+    if time_in == True and x.isoweekday() < 6: # 
         for i in range(len(readings)):
             if readings[i] == 0:
                 sensorlist.append('Sensor ' + str(i+1))
