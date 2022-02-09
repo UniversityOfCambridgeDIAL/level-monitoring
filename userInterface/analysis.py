@@ -15,6 +15,7 @@ TRIG3=23
 ECHO3=24
 TRIG4=35
 ECHO4=36
+DAYSTOEXPIRE = 7
     
 def time_in_range(current):
     """Returns whether current is in the range [start, end]"""
@@ -69,7 +70,7 @@ def dataStorage():
     cur = con.cursor()
 
     # Return all results of query
-    cur.execute('SELECT itemCode,remainStock,remainStockTrigger FROM barrels')
+    cur.execute('SELECT itemCode,remainStock,remainStockTrigger,dateExpiry FROM barrels')
     result = cur.fetchall()
 
     # Be sure to close the connection
@@ -87,21 +88,26 @@ def schedule_db():
     readings = [read1,read2,read3,read4]
     sensorlist = []
     triggerlist = []
+    expirelist = []
 #     print(readings)
-    if time_in == True and x.isoweekday() < 6: # 
+    if time_in == True and x.isoweekday() < 6: 
         for i in range(len(readings)):
-            if readings[i] == 0:
+            if float(readings[i]) <= 0.25:
                 sensorlist.append('Sensor ' + str(i+1))
         result = dataStorage()
 #         print(result)
         for i in range(len(result)):
             if result[i][1] == result[i][2]:
                 triggerlist.append(result[i][0])
-        sender = sendemail.Emailer()
-        sendTo = USER_EMAIL
-        emailSubject = "Stock level monitoring status"
-        emailContent = "Please ignore if not relevant to you. <br>" + "Liquid level is running low: " + str(sensorlist) +"<br>" + "Remaining stock trigger: "+ str(triggerlist)
-        sender.sendmail(sendTo, emailSubject, emailContent)
+            if (x + datetime.timedelta(days=DAYSTOEXPIRE)).strftime("%Y-%m-%d") == result[i][3]:
+#                 print((x + datetime.timedelta(days=DAYSTOEXPIRE)).strftime("%Y-%m-%d"),result[i][3])
+                expirelist.append(result[i][0])
+        if sensorlist or triggerlist or expirelist:
+            sender = sendemail.Emailer()
+            sendTo = USER_EMAIL
+            emailSubject = "Stock level monitoring status"
+            emailContent = "Please ignore if not relevant to you. <br> Liquid level is running low: " + str(sensorlist) + "<br> Remaining stock trigger: "+ str(triggerlist) + "<br> Expiring stock: "+ str(expirelist)
+            sender.sendmail(sendTo, emailSubject, emailContent)
     secs2 = schedule_db_timing()
 #     print('secs2',secs2)
     Timer(secs2,schedule_db).start()#86400seconds=24hours
@@ -116,4 +122,4 @@ if __name__ == '__main__':
     g=dataCollection.measureAverage(7,11)
     print(g)
     h= analyseMeasureAverage(7,11)
-    print(h)
+    print(type(h))
