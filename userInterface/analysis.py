@@ -92,7 +92,7 @@ def schedule_db():
 #     print(readings)
     if time_in == True and x.isoweekday() < 6: 
         for i in range(len(readings)):
-            if float(readings[i]) <= 0.25:
+            if str(readings[i]) == '0.25' or str(readings[i]) == '0':
                 sensorlist.append('Sensor ' + str(i+1))
         result = dataStorage()
 #         print(result)
@@ -106,7 +106,7 @@ def schedule_db():
             sender = sendemail.Emailer()
             sendTo = USER_EMAIL
             emailSubject = "Stock level monitoring status"
-            emailContent = "Please ignore if not relevant to you. <br> Liquid level is running low: " + str(sensorlist) + "<br> Remaining stock trigger: "+ str(triggerlist) + "<br> Expiring stock: "+ str(expirelist)
+            emailContent = "Please ignore if not relevant to you. <br><br> Liquid level is running low: " + str(sensorlist) + "<br> Remaining stock trigger: "+ str(triggerlist) + "<br> Expiring stock: "+ str(expirelist) + "<br><br> To accesss web page: http://(raspberrypi_ip_adress):5000"
             sender.sendmail(sendTo, emailSubject, emailContent)
     secs2 = schedule_db_timing()
 #     print('secs2',secs2)
