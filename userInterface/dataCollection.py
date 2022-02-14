@@ -25,14 +25,11 @@ distlist=[]
 scan=False
 
 def measureAverage(TRIG,ECHO):  
-    GPIO.setup(TRIG,GPIO.OUT)
-    GPIO.setup(ECHO,GPIO.IN)
-     
-    GPIO.output(TRIG, False)
     history=[]
 
     starttime=time.time()
     for i in range(10):
+        GPIO.setup(TRIG,GPIO.OUT)  
         GPIO.output(TRIG, False)
         time.sleep(0.1)
         #print("Waiting for sensor to settle...")
@@ -44,13 +41,14 @@ def measureAverage(TRIG,ECHO):
         GPIO.output(TRIG, True)
         time.sleep(0.0001)
         GPIO.output(TRIG, False)
+        GPIO.setup(ECHO,GPIO.IN)
 
         #print("Sending...")
         pulse_start=0
         pulse_end=0
         start=time.time()
         pulse_start=start
-        while GPIO.input(ECHO)==0 and pulse_start-start<=0.0005:
+        while GPIO.input(ECHO)==0 and pulse_start-start<=0.00075:
             pulse_start=time.time()
         if round(pulse_start-start,3)>=0.300:
             print(timeout)
@@ -61,9 +59,7 @@ def measureAverage(TRIG,ECHO):
                 pulse_end=time.time()
                 pulse_duration=pulse_end-pulse_start
                 #print("Measuring...")
-            if pulse_duration > 2:
-                return 999
-
+            
         pulse_duration=pulse_end-pulse_start
 
         # ====================
@@ -75,6 +71,8 @@ def measureAverage(TRIG,ECHO):
             history.append(history[-1])
         else:
             history.append(distance)
+        history.append(distance)
+#         print(history)
     validcount=0
     total=0
 #     print(history)
@@ -99,13 +97,13 @@ def measure(TRIG,ECHO):
     pulse_start = 0
     pulse_end = 0
     GPIO.setup(TRIG,GPIO.OUT)
-    GPIO.setup(ECHO,GPIO.IN)
      
     GPIO.output(TRIG, False)
     time.sleep(0.5)
     GPIO.output(TRIG, True)
     time.sleep(0.1)
     GPIO.output(TRIG, False)
+    GPIO.setup(ECHO,GPIO.IN)
 
     while GPIO.input(ECHO)==0:
         pulse_start = time.time()
@@ -127,7 +125,7 @@ if __name__ == "__main__":
     loop = 1
     while loop == 1:
         x=measure(7,11) 
-        y=measureAverage(7,11)
+        y=measureAverage(15,15)
         print("measure:",x,", average:",y)
  
 # GPIO.cleanup()
