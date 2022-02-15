@@ -120,12 +120,11 @@ def measure(TRIG,ECHO):
         pulse_duration=pulse_end-pulse_start
 
     pulse_duration = pulse_end - pulse_start
-    if pulse_duration < 0:
-        return 999
     distance = pulse_duration * 17150
 
     distance = round(distance, 2)
-
+    if distance < 0:
+        distance = 999
 #     print ("Distance:",distance,"cm")
     return distance
  
@@ -133,7 +132,7 @@ if __name__ == "__main__":
     loop = 1
     while loop == 1:
         x=measure(7,11) 
-        y=measureAverage(7,11)#15,15
+        y=measureAverage(15,15)#15,15
         print("measure:",x,", average:",y)
  
 # GPIO.cleanup()
