@@ -23,6 +23,7 @@ avg=0
 dist=[]
 distlist=[]
 scan=False
+maxTime = 0.04
 
 def measureAverage(TRIG,ECHO):  
     history=[]
@@ -68,10 +69,10 @@ def measureAverage(TRIG,ECHO):
         distance=pulse_duration*17150
         distance=round(distance,2)
         if distance < 0:
-            history.append(history[-1])
+            pass
         else:
             history.append(distance)
-        history.append(distance)
+#         history.append(distance)
 #         print(history)
     validcount=0
     total=0
@@ -84,6 +85,8 @@ def measureAverage(TRIG,ECHO):
         avg_dist=round(total/validcount,2)
 #         print("Average distance:",avg_dist, "cm")
         return avg_dist
+    else:
+        return 999
 #         if avg_dist<=50:
 #             return([avg_dist,True,avg_dist,avg_dist])
 #         else:
@@ -105,27 +108,32 @@ def measure(TRIG,ECHO):
     GPIO.output(TRIG, False)
     GPIO.setup(ECHO,GPIO.IN)
 
-    while GPIO.input(ECHO)==0:
+    pulse_start = time.time()
+    timeout = pulse_start + maxTime
+    while GPIO.input(ECHO)==0 and pulse_start < timeout:
         pulse_start = time.time()
-    while GPIO.input(ECHO)==1 and pulse_duration < 2:
+        
+#     pulse_end = time.time()
+#     timeout = pulse_end + maxTime
+    while GPIO.input(ECHO)==1 and pulse_duration < 2:#pulse_end < timeout:
         pulse_end = time.time()
         pulse_duration=pulse_end-pulse_start
-    if pulse_duration > 2:
-        return 999
-    pulse_duration = pulse_end - pulse_start
 
+    pulse_duration = pulse_end - pulse_start
+    if pulse_duration < 0:
+        return 999
     distance = pulse_duration * 17150
 
     distance = round(distance, 2)
 
-    #  print ("Distance:",distance,"cm")
+#     print ("Distance:",distance,"cm")
     return distance
  
 if __name__ == "__main__":
     loop = 1
     while loop == 1:
         x=measure(7,11) 
-        y=measureAverage(15,15)
+        y=measureAverage(7,11)#15,15
         print("measure:",x,", average:",y)
  
 # GPIO.cleanup()
