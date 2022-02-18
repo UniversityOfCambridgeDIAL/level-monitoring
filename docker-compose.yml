@@ -8,8 +8,8 @@ services:
     devices:
       - /dev/gpiomem:/dev/gpiomem
     volumes:
-      - db-data:/app/userInterface
-
+#      - db-data:/app/userInterface
+      - ./userInterface:/app/userInterface
 volumes:
   db-data:
     driver: local
