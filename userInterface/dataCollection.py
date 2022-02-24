@@ -132,7 +132,7 @@ if __name__ == "__main__":
     loop = 1
     while loop == 1:
         x=measure(7,11) 
-        y=measureAverage(15,15)#15,15
+        y=measureAverage(7,11)#15,15
         print("measure:",x,", average:",y)
  
 # GPIO.cleanup()

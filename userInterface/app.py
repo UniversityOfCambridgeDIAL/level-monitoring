@@ -9,7 +9,10 @@ from wtforms import SubmitField, SelectField, RadioField, HiddenField, StringFie
 from wtforms.validators import InputRequired, Length, Regexp, NumberRange
 from wtforms.fields import DateTimeLocalField
 from datetime import date, datetime
+import time
 
+import stateDataStorage
+stateDataStorage.start()
 import analysis
 TRIG1=7
 ECHO1=11
@@ -19,6 +22,7 @@ TRIG3=23
 ECHO3=24
 TRIG4=35
 ECHO4=36
+
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
@@ -97,7 +101,7 @@ def stringdate():
     date_list = str(today).split('-')
     # build string in format 01-01-2000
     date_string = date_list[1] + "-" + date_list[2] + "-" + date_list[0]
-    return today
+    return str(today)
 
 # The route() function of the Flask class is a decorator,
 # which tells the application which URL should call
@@ -109,7 +113,11 @@ def index():
     sensor1 = analysis.analyseMeasure(TRIG1,ECHO1) 
     sensor2 = analysis.analyseMeasure(TRIG2,ECHO2) 
     sensor3 = analysis.analyseMeasure(TRIG3,ECHO3) 
-    sensor4 = analysis.analyseMeasure(TRIG4,ECHO4) 
+    sensor4 = analysis.analyseMeasure(TRIG4,ECHO4)
+    stateDataStorage.Temp21.set_value(sensor1)
+    stateDataStorage.Temp22.set_value(sensor2)
+    stateDataStorage.Temp23.set_value(sensor3)
+    stateDataStorage.Temp24.set_value(sensor4)
     return render_template('index.html', sensor1=sensor1,sensor2=sensor2,sensor3=sensor3,sensor4=sensor4)
 
 @app.route('/inventory')
@@ -136,6 +144,22 @@ def add_record():
         db.session.commit()
         # create a message to send to the template
         message = f"The data for barrel {itemCode} has been submitted."
+        # send to opc ua
+        stateDataStorage.Temp1.set_value(time.ctime(int(time.time())))
+        stateDataStorage.Temp2.set_value(itemCode)
+        stateDataStorage.Temp3.set_value(float(remainStock))
+        stateDataStorage.Temp4.set_value(float(remainStockTrigger))
+        stateDataStorage.Temp5.set_value(dateExpiry)
+        stateDataStorage.Temp6.set_value(dateCreated)
+        # trigger event
+        stateDataStorage.myevgen.event.severity = 1
+        stateDataStorage.myevgen.event.TimeStamp = time.ctime(int(time.time()))
+        stateDataStorage.myevgen.event.ItemCode = itemCode
+        stateDataStorage.myevgen.event.RemainingStock = float(remainStock)
+        stateDataStorage.myevgen.event.RemainingStockTrigger = float(remainStockTrigger)
+        stateDataStorage.myevgen.event.ExpiryDate = dateExpiry
+        stateDataStorage.myevgen.event.DateCreatedUpdated = dateCreated
+        stateDataStorage.myevgen.trigger(message="Create barrel: %s" % itemCode)
         return render_template('add_record.html', message=message)
     else:
         # show validaton errors
@@ -203,6 +227,23 @@ def edit_result():
         db.session.commit()
         # create a message to send to the template
         message = f"The data for barrel {barrel.itemCode} has been updated."
+        # send to opc ua
+        stateDataStorage.Temp1.set_value(time.ctime(int(time.time())))
+        stateDataStorage.Temp2.set_value(barrel.itemCode)
+        stateDataStorage.Temp3.set_value(barrel.remainStock)
+        stateDataStorage.Temp4.set_value(barrel.remainStockTrigger)
+        stateDataStorage.Temp5.set_value(barrel.dateExpiry)
+        stateDataStorage.Temp6.set_value(barrel.dateCreated)
+        # trigger event
+        stateDataStorage.myevgen.event.severity = 1
+        stateDataStorage.myevgen.event.TimeStamp = time.ctime(int(time.time()))
+        stateDataStorage.myevgen.event.ItemCode = barrel.itemCode
+        stateDataStorage.myevgen.event.RemainingStock = barrel.remainStock
+        stateDataStorage.myevgen.event.RemainingStockTrigger = barrel.remainStockTrigger
+        stateDataStorage.myevgen.event.ExpiryDate = barrel.dateExpiry
+        stateDataStorage.myevgen.event.DateCreatedUpdated = barrel.dateCreated
+        stateDataStorage.myevgen.trigger(message="Update barrel: %s" % barrel.itemCode)        
+        
         return render_template('result.html', message=message)
     else:
         # show validaton errors
