@@ -5,7 +5,9 @@ from threading import Timer
 import time
 import datetime
 import sqlite3
+import stateDataStorage
 
+ENABLE_EMAIL = 0 #1 to enable email sending
 USER_EMAIL = ['jyl49@cam.ac.uk'] # ['abc@xyz.com','efg@xyz.com']
 TRIG1=7
 ECHO1=11
@@ -78,7 +80,7 @@ def dataStorage():
     return result
 
 def schedule_db():
-#     print('test')
+#     print('schedule')
     x = datetime.datetime.today()
     time_in = time_in_range (datetime.datetime.now().time())
     read1 = analyseMeasureAverage(TRIG1,ECHO1)
@@ -86,11 +88,15 @@ def schedule_db():
     read3 = analyseMeasureAverage(TRIG3,ECHO3)
     read4 = analyseMeasureAverage(TRIG4,ECHO4)
     readings = [read1,read2,read3,read4]
+    stateDataStorage.Temp21.set_value(read1)
+    stateDataStorage.Temp22.set_value(read2)
+    stateDataStorage.Temp23.set_value(read3)
+    stateDataStorage.Temp24.set_value(read4)
     sensorlist = []
     triggerlist = []
     expirelist = []
 #     print(readings)
-    if time_in == True and x.isoweekday() < 6: 
+    if time_in == True and x.isoweekday() < 6 and ENABLE_EMAIL == 1: 
         for i in range(len(readings)):
             if str(readings[i]) == '0.25' or str(readings[i]) == '0':
                 sensorlist.append('Sensor ' + str(i+1))
