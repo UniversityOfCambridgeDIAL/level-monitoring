@@ -93,6 +93,15 @@ class AddRecord(FlaskForm):
     dateCreated = HiddenField()
     submit = SubmitField('Add/Update Record')
 
+class UsageRecord(FlaskForm):
+    input1 = FloatField('Barrels', [ InputRequired(),
+        NumberRange(min=1.0, max=99, message="Invalid number")
+        ])
+    input2 = FloatField('Period', [ InputRequired(),
+        NumberRange(min=1.0, max=99, message="Invalid number")
+        ])
+    submit = SubmitField('Calculate')
+    
 # +++++++++++++++++++++++
 # get local date - does not account for time zone
 # note: date was imported at top of script
@@ -124,6 +133,32 @@ def index():
 def inventory():
     barrels = Barrel.query.order_by(Barrel.itemCode).all()
     return render_template('list.html', barrels=barrels)
+
+#usage
+@app.route('/usage', methods=['GET','POST'])
+def usage():
+    form3 = UsageRecord()
+#     message='test'
+#     return render_template('usage.html', message=message)
+
+    if form3.validate_on_submit():
+        input1 = request.form['input1']
+        input2 = request.form['input2']
+        output = float(input1)/float(input2)
+        # create a message to send to the template
+        message = f"The usage is {output}."
+        return render_template('usage.html', message=message)
+    else:
+        # show validaton errors
+        # see https://pythonprogramming.net/flash-flask-tutorial/
+        for field, errors in form3.errors.items():
+            for error in errors:
+                flash("Error in {}: {}".format(
+                    getattr(form1, field).label.text,
+                    error
+                ), 'error')
+        return render_template('usage.html', form3=form3)    
+
 
 # add a new item to the database
 @app.route('/add_record', methods=['GET', 'POST'])
